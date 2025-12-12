@@ -101,7 +101,7 @@
     .draw-stage{
       position:absolute;
       top:50%;
-      left:60%;                 /* 偏右 */
+      left:50%;                 /* 偏右 */
       transform:translate(-50%,-50%);
       width:min(360px, 70vw);
       aspect-ratio: 1 / 1;
@@ -151,7 +151,7 @@
     @media (max-width:520px){
       .menu button{ width:96px; }
       .draw-actions button{ width:128px; }
-      .draw-stage{ left:56%; }
+      .draw-stage{ left:50%; }
     }
     /* ===== 抽卡結果面板（正中央、橫跨全螢幕） ===== */
     .overlay{
@@ -236,6 +236,13 @@
       background:rgba(120, 90, 255, 0.45);
       border-color: rgba(120, 90, 255, 0.65);
     }
+    .cost-line{
+      text-align:center;
+      font-weight:900;
+      margin-top:6px;
+      font-size:18px;
+    }
+
 
 
 
@@ -293,6 +300,8 @@
     <h2 class="result-title">抽卡結果</h2>
 
     <div id="prizeArea" class="prize-area"></div>
+    <div class="cost-line">花費寶石 <span id="costNum">0</span></div>
+
 
     <div class="power-line">戰鬥力 <span id="powerNum">0</span></div>
 
@@ -346,34 +355,38 @@
   }
 
   // 顯示抽卡結果（✅ 你剛剛那串 forEach 內容就是要放這裡）
-  function openResult(results){
-    const overlay = document.getElementById("resultOverlay");
-    const prizeArea = document.getElementById("prizeArea");
-    const powerNum = document.getElementById("powerNum");
-    const title = document.querySelector(".result-title");
+  function openResult(results, cost){
+  const overlay = document.getElementById("resultOverlay");
+  const prizeArea = document.getElementById("prizeArea");
+  const powerNum = document.getElementById("powerNum");
+  const costNum = document.getElementById("costNum");
+  const title = document.querySelector(".result-title");
 
-    title.textContent = `抽卡結果（${currentPoolKey === "cat" ? "貓卡池" : "腳色卡池"}）`;
+  title.textContent = `抽卡結果（${currentPoolKey === "cat" ? "貓卡池" : "腳色卡池"}）`;
 
-    prizeArea.innerHTML = "";
-    let totalPower = 0;
+  costNum.textContent = cost;   // ✅ 顯示本次花費
 
-    results.forEach(r => {
-      totalPower += r.power;
+  prizeArea.innerHTML = "";
+  let totalPower = 0;
 
-      const card = document.createElement("div");
-      card.className = "prize-card";
+  results.forEach(r => {
+    totalPower += r.power;
 
-      const img = document.createElement("img");
-      img.src = r.img;
-      img.alt = "獎品";
+    const card = document.createElement("div");
+    card.className = "prize-card";
 
-      card.appendChild(img);
-      prizeArea.appendChild(card);
-    });
+    const img = document.createElement("img");
+    img.src = r.img;
+    img.alt = "獎品";
 
-    powerNum.textContent = totalPower;
-    overlay.classList.remove("hidden");
-  }
+    card.appendChild(img);
+    prizeArea.appendChild(card);
+  });
+
+  powerNum.textContent = totalPower;
+  overlay.classList.remove("hidden");
+}
+
 
   function closeResult(){
     document.getElementById("resultOverlay").classList.add("hidden");
@@ -400,7 +413,7 @@
     document.getElementById("drawImg").src = results[results.length - 1].img;
 
     renderRes();
-    openResult(results);
+    openResult(results, cost);
   }
 
   // 初始化
