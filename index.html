@@ -168,6 +168,9 @@
         </style>
     </head>
     <body>
+         <audio id="bgm" src="bgm.mp3" loop autoplay></audio>
+
+        <script src="audio.js" defer></script>
         <!-- 金幣顯示 -->
         <div class="coin-panel">
             金幣：<span id="coins">0</span>
@@ -199,7 +202,8 @@
 
             <div class="menu-item">
                 <img class="img" src="https://png.pngtree.com/element_our/png/20181227/settings-glyph-black-icon-png_292947.jpg" alt="設定">
-                <button class="button">設定</button>
+                <button class="button" onclick="location.href='settings.html'">設定</button>
+
             </div>
         </div>
 
