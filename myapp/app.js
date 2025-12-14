@@ -43,34 +43,34 @@ app.get('/', (req, res) => {
 app.post('/api/gacha', express.json(), (req, res) => {
     const { times } = req.body;
     
-    if (!times || typeof times !== 'number' || times <= 0) {
-        return res.status(400).json({ message: '無效的抽卡次數 (times)' });
-    }
+    // ... (驗證 times 的部分不用動)
 
     const results = [];
     
+    // 修改這裡的迴圈邏輯
     for (let i = 0; i < times; i++) {
         const randomIndex = getRandomInt(0, baseCharacters.length - 1);
         const baseCharacter = baseCharacters[randomIndex];
         
-        // 產生角色
+        // 生成唯一的 UID (使用 時間戳 + 隨機亂數)
+        // 這樣可以保證每一張卡片都是獨一無二的
+        const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+
         const character = {
-            // 使用當下時間戳記+隨機數當作唯一 ID (避免重複)
-            uid: Date.now() + Math.random(), 
-            id: baseCharacter.id,
+            uid: uniqueId,          // <--- 關鍵：這是這張卡片的唯一身分證
+            id: baseCharacter.id,   // 這是角色種類 (例如 1 代表奎托斯)
             name: baseCharacter.name,
             img: baseCharacter.img,
-            combatPower: getRandomInt(MIN_POWER, MAX_POWER),
-            obtainTime: new Date().toLocaleString() // 紀錄獲得時間
+            combatPower: getRandomInt(MIN_POWER, MAX_POWER), // 獨立的隨機戰鬥力
+            obtainTime: new Date().toLocaleString()
         };
         
         results.push(character);
         
-        // *** 新增：將抽到的角色存入伺服器的庫存陣列中 ***
+        // 因為是用 push，所以會直接加在陣列後面，不會覆蓋前面的資料
         userInventory.push(character);
     }
     
-    // 這裡我們把最新的庫存數量也回傳回去，方便前端顯示
     res.json({ results, totalCount: userInventory.length });
     
     console.log(`抽卡 ${times} 次完成，目前庫存總數: ${userInventory.length}`);

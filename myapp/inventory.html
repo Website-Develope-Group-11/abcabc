@@ -177,14 +177,9 @@
 
                     // *** 新增：點擊事件 ***
                     card.onclick = () => {
-                        // 1. 儲存選擇的角色到 LocalStorage
-                        // 我們把整個物件轉成字串存起來，key 叫做 'selectedHero'
+                        // 這裡會抓取到當前迴圈的 char 物件 (包含它獨特的 uid 和 combatPower)
                         localStorage.setItem('selectedHero', JSON.stringify(char));
-
-                        // 2. 視覺回饋 (簡單的 alert，或者你可以做更高級的樣式變化)
-                        alert(`已出戰：${char.name}！\n請回到主畫面查看。`);
-                        
-                        // (選用) 也可以加上邊框變色邏輯，這裡先保持簡單
+                        alert(`已出戰：${char.name}\n戰鬥力：${char.combatPower}`);
                     };
 
                     grid.appendChild(card);
