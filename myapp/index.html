@@ -10,7 +10,31 @@
 
             body {
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                background: radial-gradient(circle at top, #272953 0, #090919 50%, #050510 100%);
+                
+                /* --- 修改開始：背景圖片設定 --- */
+                
+                /* 1. 指定圖片路徑 */
+                background-image: url('./background.png');
+                
+                /* 2. 讓圖片填滿整個螢幕 (Cover) */
+                background-size: cover;
+                
+                /* 3. 圖片置中對齊 */
+                background-position: center center;
+                
+                /* 4. 防止圖片重複 */
+                background-repeat: no-repeat;
+                
+                /* (選用) 5. 讓背景固定，不會隨頁面捲動 (雖然主畫面也不能捲動) */
+                background-attachment: fixed;
+
+                /* (選用) 6. 加一層半透明黑色遮罩，避免背景太花導致文字看不清楚 */
+                /* 如果您的背景圖很暗，可以把下面這行拿掉 */
+                /* background-blend-mode: overlay; */
+                /* background-color: rgba(0, 0, 0, 0.4); */
+
+                /* --- 修改結束 --- */
+
                 color: #f5f5ff;
                 height: 100vh;
                 overflow: hidden;
@@ -29,17 +53,82 @@
                 gap: 16px;
             }
 
-            .monster,
-            .player {
+            .monster, .player {
                 display: flex;
+                flex-direction: column; /* 關鍵：讓圖片和文字變垂直排列 */
                 align-items: center;
                 justify-content: center;
+                gap: 8px; /* 圖片跟文字的距離 */
+            }
+
+            .player {
+                /* 確保主角在移動時會蓋在怪獸和其他元素上面 */
+                position: relative;
+                z-index: 10;
+                
+                /* 關鍵：加入轉場效果 */
+                /* all 代表所有屬性變化都要有動畫 */
+                /* 0.3s 是動畫時間 */
+                /* cubic-bezier(...) 是一個貝茲曲線，能製造出「衝出去後稍微回彈一點」的打擊感 */
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            /* 2. 新增：攻擊狀態的樣式 */
+            /* 當 .player 元素同時擁有 .attacking 這個類別時，就會套用這個樣式 */
+            .player.attacking {
+                /* 往上移動 180px (負數是往上)，並放大 1.1 倍 */
+                /* 提示：如果撞的位置太高或太低，請調整 -180px 這個數字 */
+                transform: translateY(-180px) scale(1.1);
+                
+                /* 加個陰影讓它看起來飛起來了 */
+                box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            }
+
+            @keyframes shakeMonster {
+                0% { transform: translate(0, 0) rotate(0deg); }
+                20% { transform: translate(-10px, 0) rotate(-5deg); } /* 往左歪 */
+                40% { transform: translate(10px, 0) rotate(5deg); }   /* 往右歪 */
+                60% { transform: translate(-10px, 0) rotate(-5deg); } /* 再往左 */
+                80% { transform: translate(10px, 0) rotate(5deg); }   /* 再往右 */
+                100% { transform: translate(0, 0) rotate(0deg); }
+            }
+
+            .monster.hit {
+                /* 動畫時間設定為 0.5 秒 */
+                animation: shakeMonster 0.5s ease-in-out; 
+                /* 受傷時變紅一下，增加打擊感 */
+                filter: brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(5);
             }
 
             .monster img {
+                /* 保持原本的大小設定 */
                 width: 200px;
                 height: 200px;
                 object-fit: contain;
+                /* 加一點浮動動畫讓怪獸看起來活著 (選用) */
+                animation: floatMonster 3s ease-in-out infinite; 
+            }
+
+            .monster-info {
+                background: rgba(0, 0, 0, 0.7); /* 深色半透明背景 */
+                padding: 8px 16px;
+                border-radius: 8px;
+                border: 2px solid #ff4444; /* 紅色邊框代表敵人 */
+                text-align: center;
+                box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); /* 紅色發光效果 */
+            }
+
+            .monster-name {
+                color: #ffcccc; /* 淺紅色文字 */
+                font-size: 1rem;
+                font-weight: bold;
+                margin-bottom: 4px;
+            }
+
+            .monster-power {
+                color: #ff4444; /* 鮮紅色戰力數值 */
+                font-weight: bold;
+                font-size: 1.1rem;
             }
 
             .player img {
@@ -204,53 +293,113 @@
                 font-size: 0.8rem;
                 color: #00e676;
             }
+
+            /* index.html 的 style 內 */
+
+            .battle-btn {
+                margin-top: 20px; /* 與上方主角保持距離 */
+                padding: 12px 30px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #fff;
+                background: linear-gradient(135deg, #ff416c, #ff4b2b); /* 熱血的漸層紅 */
+                border: 2px solid #ffcccc;
+                border-radius: 50px; /* 圓角 */
+                cursor: pointer;
+                box-shadow: 0 0 15px rgba(255, 75, 43, 0.6); /* 發光效果 */
+                transition: transform 0.1s, box-shadow 0.1s;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            }
+
+            .battle-btn:hover {
+                transform: scale(1.05); /* 滑鼠移上去放大 */
+                box-shadow: 0 0 25px rgba(255, 75, 43, 0.9);
+            }
+
+            .battle-btn:active {
+                transform: scale(0.95); /* 按下去縮小 */
+            }
+
+            .convert-btn {
+                margin-top: 6px; /* 與上方文字保持距離 */
+                padding: 4px 8px;
+                font-size: 0.8rem;
+                border: 1px solid #ffd700;
+                background: rgba(255, 215, 0, 0.1);
+                color: #ffd700;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: 0.2s;
+                width: 100%; /* 填滿面板寬度 */
+            }
+
+            .convert-btn:hover {
+                background: rgba(255, 215, 0, 0.3);
+                transform: translateY(-1px);
+            }
+
+            .convert-btn:active {
+                transform: translateY(1px);
+            }
         </style>
     </head>
     <body>
         <!-- 金幣顯示 -->
         <div class="coin-panel">
-            金幣：<span id="coins">0</span>
+            <span>💰 金幣：<span id="coins">0</span></span>
+            <span style="margin-left: 10px;">💎 寶石：<span id="gems">0</span></span>
         </div>
 
         <!-- 中央怪獸 + 主角 -->
         <div class="battle">
-            <div class="monster"><!--怪獸-->
-                <!-- 換成你的怪獸圖片路徑 -->
+            <div class="monster">
                 <img src="monster.png" alt="怪物">
+                
+                <div class="monster-info">
+                    <div class="monster-name">深淵巨龍</div>
+                    <div class="monster-power">
+                        戰力: <span id="monsterPower">???</span>
+                    </div>
+                </div>
             </div>
-            <div class="player"><!--主角-->
-                <!-- 換成你的主角圖片路徑 -->
-                <img src="player.png" alt="主角">
-            </div>
+            
+            <div class="player">
+                </div>
+
+            <button id="startBattleBtn" class="battle-btn">開始戰鬥</button>
         </div>
 
         <!-- 右上角選單 -->
         <div class="container">
             <div class="menu-item">
-                <img class="img" src="https://png.pngtree.com/png-vector/20201224/ourmid/pngtree-ancient-battlefield-armor-helmet-vector-png-image_2591845.jpg" alt="外觀">
+                <img class="img" src="./character.png" alt="外觀">
                 
                 <button class="button" onclick="window.location.href='./inventory.html'">角色</button>
             </div>
             
             <div class="menu-item">
-                <img class="img" src="https://png.pngtree.com/png-clipart/20211229/ourmid/pngtree-hand-drawn-blue-large-egg-twisting-machine-illustration-png-image_4070974.png" alt="抽卡">
+                <img class="img" src="./gacha.png" alt="抽卡">
                 <button class="button" type="button" onclick="window.location.href='./gacha.html'">抽卡</button>
             </div>
 
             <div class="menu-item">
-                <img class="img" src="https://png.pngtree.com/element_our/png/20181227/settings-glyph-black-icon-png_292947.jpg" alt="設定">
-                <button class="button">設定</button>
+                <img class="img" src="./settings.png" alt="設定">
+                <button class="button" type="button" onclick="window.location.href='./settings.html'">設定</button>
             </div>
         </div>
 
         <!-- 左下角貓咪 + 點擊資訊 -->
         <div class="wrap">
-            <!-- 換成你的貓咪圖片：cat1.jpg / cat2.jpg -->
-            <img id="cat" src="https://popcat.click/twitter-card.jpg" alt="cat">
+            <img id="cat" src="./Popcat_default.png" alt="cat">
+            
             <div class="panel">
                 <div>點擊次數：<span id="clickCount">0</span></div>
                 <div>金幣：<span id="coinsPanel">0</span></div>
                 <div style="font-size:0.8rem;color:#bfc1ff;">點貓：喵一聲 +10 金幣</div>
+                
+                <button id="convertBtn" class="convert-btn" title="200 金幣換 10 寶石">
+                    🔄 換寶石 (200金)
+                </button>
             </div>
         </div>
 
@@ -287,34 +436,41 @@
             const clickCountEl = document.getElementById("clickCount");
             const coinsPanelEl = document.getElementById("coinsPanel");
             const coinsTopEl = document.getElementById("coins");
+            const gemsTopEl = document.getElementById("gems"); // 新增：取得寶石元素
 
-            const img1 = "https://popcat.click/twitter-card.jpg";
-            const img2 = "https://i.redd.it/8btmhq88z5s71.jpg";
+            const img1 = "./Popcat_default.png";
+            const img2 = "./popcat_open.png";
             let toggled = false;
 
-            let clicks = 0;
-            let coins = 0;
+            let clicks = 0; // 點擊次數通常不用存，或您也可以存
+            let coins = localStorage.getItem('player_coins') ? parseInt(localStorage.getItem('player_coins')) : 0;
+            let gems = localStorage.getItem('player_gems') ? parseInt(localStorage.getItem('player_gems')) : 500; // 預設給 500 寶石讓您抽
+
+            coinsTopEl.textContent = coins;
+            coinsPanelEl.textContent = coins;
+            if(gemsTopEl) gemsTopEl.textContent = gems;
 
             img.onclick = (event) => 
             {
-                // 貓叫一次：每次點都從頭播
+                // 貓叫與換圖
                 audio.currentTime = 0;
                 audio.play();
-
-                // 換圖（來回切）
                 toggled = !toggled;
                 img.src = toggled ? img2 : img1;
 
-                // 記錄點擊次數與金幣
+                // 記錄數據
                 clicks += 1;
-                coins += 10;
+                coins += 10; // 點一次賺 10 金幣
 
-                // 更新顯示（左下 panel + 左上總金幣）
+                // --- 修改 2: 每次點擊都存入 LocalStorage ---
+                localStorage.setItem('player_coins', coins);
+
+                // 更新顯示
                 clickCountEl.textContent = clicks;
                 coinsPanelEl.textContent = coins;
                 coinsTopEl.textContent = coins;
 
-                // 產生 +10 飄字
+                // 飄字特效
                 createCoinFloat(event.clientX, event.clientY);
             };
 
@@ -325,6 +481,149 @@
 
                 floatEl.style.left = clientX + "px";
                 floatEl.style.top = clientY + "px";
+
+                document.body.appendChild(floatEl);
+
+                setTimeout(() => {
+                    floatEl.remove();
+                }, 700);
+            }
+
+            /* index.html 的 script 內 */
+
+            // --- 輔助函式：產生隨機整數 ---
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            // 當頁面載入完成時執行
+            window.addEventListener('DOMContentLoaded', () => {
+                
+                // 1. 設定怪獸的戰力範圍 (例如 8000 ~ 20000，比主角稍微強一點)
+                const monsterMin = 8000;
+                const monsterMax = 20000;
+                const monsterPower = getRandomInt(monsterMin, monsterMax);
+
+                // 2. 更新畫面顯示
+                const monsterPowerEl = document.getElementById('monsterPower');
+                if (monsterPowerEl) {
+                    monsterPowerEl.innerText = monsterPower;
+                }
+
+                // ... (原本載入主角的程式碼保持在下面) ...
+                const playerContainer = document.querySelector('.player');
+                const savedData = localStorage.getItem('selectedHero');
+                // ...
+            });
+
+            /* index.html 的 script 內 */
+
+            // 取得按鈕元素
+            const battleBtn = document.getElementById('startBattleBtn');
+
+            /* index.html 的 script 內，替換掉原本的 battleBtn 點擊事件 */
+
+            battleBtn.addEventListener('click', () => {
+                // --- 1. 前置檢查與數值取得 (這部分跟原本一樣) ---
+                const savedData = localStorage.getItem('selectedHero');
+                if (!savedData) {
+                    alert("⚠️ 您還沒有選擇出戰角色！\n請先去「角色」頁面選擇一隻英雄。");
+                    return;
+                }
+
+                const monsterPowerEl = document.getElementById('monsterPower');
+                const monsterValText = monsterPowerEl ? monsterPowerEl.innerText : "0";
+                const monsterPower = monsterValText === "???" ? 0 : parseInt(monsterValText);
+
+                const char = JSON.parse(savedData);
+                const playerPower = char.combatPower;
+                const playerName = char.name;
+
+                // 取得主角和怪獸的容器元素
+                const playerContainer = document.querySelector('.player');
+                const monsterContainer = document.querySelector('.monster');
+
+                // --- 2. 執行戰鬥動畫 ---
+                
+                // 步驟 A: 把主角設定為「攻擊中」狀態 (CSS 會自動執行往上衝的動畫)
+                playerContainer.classList.add('attacking');
+
+                // 步驟 B: 設定一個計時器，等待動畫衝到怪獸身上 (設定為 300ms，配合 CSS 的 0.3s)
+                setTimeout(() => {
+        
+        // 1. 撞到了！加上 .hit 讓怪獸開始搖晃 (對應我們剛改的 CSS)
+        monsterContainer.classList.add('hit');
+
+        // 2. 重要修改：再多等 500ms (讓搖晃動畫播完)，才跳出結果
+        setTimeout(() => {
+            
+            // 判斷勝負並跳出 Alert
+            if (playerPower > monsterPower) {
+                alert(`🎉 戰鬥勝利！\n\n${playerName} 以 ${playerPower} 的戰力擊敗了戰力 ${monsterPower} 的怪獸！`);
+            } else if (playerPower < monsterPower) {
+                alert(`☠️ 戰鬥失敗...\n\n怪獸的戰力高達 ${monsterPower}，而你只有 ${playerPower}。`);
+            } else {
+                alert(`⚖️ 平手！\n雙方戰力都是 ${playerPower}，不分勝負。`);
+            }
+
+            // Alert 關閉後，復原所有狀態
+            playerContainer.classList.remove('attacking'); // 主角歸位
+            monsterContainer.classList.remove('hit');      // 怪獸停止搖晃
+
+            }, 500); // 這裡的 500ms 對應 CSS 動畫的時間
+
+        }, 300); // 這裡的 300ms 對應主角衝上去的時間
+            });
+
+            /* index.html 的 script 內 */
+
+            // 1. 取得兌換按鈕元素
+            const convertBtn = document.getElementById('convertBtn');
+
+            // 2. 加入點擊監聽器
+            convertBtn.addEventListener('click', (e) => {
+                // 防止點擊按鈕時觸發到貓咪的點擊事件 (如果按鈕在貓咪圖片上的話需要這行，這裡分開其實還好，但加了保險)
+                e.stopPropagation();
+
+                // 定義匯率
+                const costGold = 200;
+                const gainGems = 10;
+
+                // 檢查金幣是否足夠
+                if (coins >= costGold) {
+                    // 執行交易
+                    coins -= costGold;
+                    gems += gainGems;
+
+                    // 儲存新的數值
+                    localStorage.setItem('player_coins', coins);
+                    localStorage.setItem('player_gems', gems);
+
+                    // 更新畫面
+                    coinsPanelEl.textContent = coins;
+                    coinsTopEl.textContent = coins;
+                    if(gemsTopEl) gemsTopEl.textContent = gems;
+
+                    // 視覺回饋：在按鈕位置飄出 "+10 💎"
+                    createGemFloat(e.clientX, e.clientY);
+
+                } else {
+                    // 金幣不足
+                    alert(`金幣不足！\n需要 ${costGold} 金幣才能兌換，你目前只有 ${coins}。`);
+                }
+            });
+
+            // 新增：寶石飄字特效 (複製金幣的稍微改一下顏色)
+            function createGemFloat(x, y) {
+                const floatEl = document.createElement("div");
+                floatEl.className = "coin-float"; // 共用金幣的動畫 class
+                floatEl.textContent = "+10 💎";
+                floatEl.style.color = "#00e6ff";  // 改成寶石藍
+                floatEl.style.textShadow = "0 0 12px rgba(0, 230, 255, 0.9)";
+                
+                // 稍微調整位置，不要擋住按鈕
+                floatEl.style.left = x + "px";
+                floatEl.style.top = (y - 30) + "px";
 
                 document.body.appendChild(floatEl);
 

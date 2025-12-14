@@ -274,8 +274,8 @@
 
     <script>
     // 資源
-    let gems = 120;
-    let gold = 3500;
+    let gems = localStorage.getItem('player_gems') ? parseInt(localStorage.getItem('player_gems')) : 500;
+    let gold = localStorage.getItem('player_coins') ? parseInt(localStorage.getItem('player_coins')) : 0;
     const COST_ONE = 10;
     const COST_TEN = 90;
 
@@ -349,33 +349,31 @@
         const cost = (times === 10) ? COST_TEN : COST_ONE;
         
         if (gems < cost){
-            alert("寶石不足！");
+            alert("寶石不足！快去主畫面點貓賺錢換寶石吧！(未來功能)"); 
+            // 或是您可以做一個「金幣換寶石」的功能
             return;
         }
 
         // 1. 執行扣費
         gems -= cost;
 
+        // --- 修改 2: 扣款後立刻儲存回 LocalStorage ---
+        localStorage.setItem('player_gems', gems);
+
         try {
-            // 2. 呼叫後端 API
+            // ... (原本的 fetch API 呼叫邏輯保持不變) ...
             const response = await fetch('/api/gacha', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ times: times }) // 傳送抽卡次數給後端
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ times: times })
             });
 
-            if (!response.ok) {
-                throw new Error('抽卡 API 請求失敗');
-            }
+            if (!response.ok) throw new Error('抽卡 API 請求失敗');
 
-            const data = await response.json(); // 取得 { results: [...] }
-
+            const data = await response.json();
             const results = data.results;
 
             if (results && results.length > 0) {
-                // 中央偏右那張更新成最後抽到的角色圖
                 document.getElementById("drawImg").src = results[results.length - 1].img;
             }
             
@@ -386,8 +384,10 @@
         } catch (error) {
             console.error('抽卡時發生錯誤:', error);
             alert('抽卡失敗，請檢查伺服器是否運行！');
-            // 如果 API 呼叫失敗，將寶石退還
+            
+            // 如果失敗，要把錢還給玩家並存檔
             gems += cost; 
+            localStorage.setItem('player_gems', gems);
             renderRes();
         }
     }
