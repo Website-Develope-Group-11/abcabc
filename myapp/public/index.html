@@ -341,6 +341,36 @@
             .convert-btn:active {
                 transform: translateY(1px);
             }
+
+            /* --- 新增：右下角下載按鈕樣式 --- */
+            .download-doc-btn {
+                position: fixed;       /* 固定位置，不隨卷軸移動 */
+                bottom: 20px;          /* 距離底部 20px */
+                right: 20px;           /* 距離右邊 20px */
+                z-index: 1000;         /* 確保浮在最上層 */
+                
+                /* 外觀設計 (配合你的暗色系風格) */
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 15px;
+                background: rgba(12, 12, 40, 0.9);
+                border: 1px solid rgba(255, 215, 0, 0.5); /* 金色邊框 */
+                color: #ffd700;        /* 金色文字 */
+                text-decoration: none; /* 去除底線 */
+                border-radius: 8px;
+                font-size: 0.9rem;
+                font-weight: bold;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+
+            .download-doc-btn:hover {
+                background: rgba(40, 40, 90, 0.95);
+                transform: translateY(-3px); /* 滑鼠移上去稍微浮起 */
+                box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            }
         </style>
     </head>
     <body>
@@ -406,6 +436,9 @@
         <!-- 貓叫聲音效 -->
         <audio id="meow" src="meow.mp3" preload="auto"></audio>
 
+        <a href="./網站說明文件.pdf" download="幻卡扭域_網站說明文件.pdf" class="download-doc-btn">
+            下載說明文件
+        </a>
         <script>
             // --- 新增：讀取出戰角色 ---
             window.addEventListener('DOMContentLoaded', () => {
