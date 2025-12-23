@@ -27,19 +27,12 @@ const MAX_POWER = 15000;
 let userInventory = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
-// *** 關鍵修改：設定靜態檔案目錄 (將 index.html 和 gacha.html 放在根目錄) ***
-// 讓 Express 能夠服務靜態檔案（例如 index.html, gacha.html, css, 圖片等）
-// 假設您的 index.html 和 gacha.html 位於 app.js 相同的目錄
 app.use(express.static(path.join(__dirname)));
-// 如果您想讓 / 當作 index.html，且不希望靜態檔案自動服務，可以這樣設定：
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
-// ----------------------------------------------------------------------
-// 新增 Gacha API：抽卡 (POST /api/gacha)
-// ----------------------------------------------------------------------
 app.post('/api/gacha', express.json(), (req, res) => {
     const { times } = req.body;
     
@@ -57,8 +50,8 @@ app.post('/api/gacha', express.json(), (req, res) => {
         const uniqueId = Date.now().toString(36) + Math.random().toString(36).substr(2);
 
         const character = {
-            uid: uniqueId,          // <--- 關鍵：這是這張卡片的唯一身分證
-            id: baseCharacter.id,   // 這是角色種類 (例如 1 代表奎托斯)
+            uid: uniqueId,          
+            id: baseCharacter.id,   // 角色種類
             name: baseCharacter.name,
             img: baseCharacter.img,
             combatPower: getRandomInt(MIN_POWER, MAX_POWER), // 獨立的隨機戰鬥力
@@ -78,7 +71,6 @@ app.post('/api/gacha', express.json(), (req, res) => {
 
 app.get('/api/inventory', (req, res) => {
     // 回傳整個庫存陣列
-    // 可以選擇反轉陣列 (reverse)，讓最新抽到的顯示在最前面
     res.json([...userInventory].reverse());
 });
 
@@ -110,5 +102,5 @@ app.get('/api/characters/:id', (req, res) => {
 
 // --- 啟動伺服器 ---
 app.listen(port, () => {
-  console.log(`🚀 遊戲 API 伺服器正在 http://localhost:${port} 運行`);
+  console.log(`遊戲 API 伺服器正在 http://localhost:${port} 運行`);
 });
