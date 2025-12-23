@@ -374,13 +374,11 @@
         </style>
     </head>
     <body>
-        <!-- 金幣顯示 -->
         <div class="coin-panel">
             <span>💰 金幣：<span id="coins">0</span></span>
             <span style="margin-left: 10px;">💎 寶石：<span id="gems">0</span></span>
         </div>
 
-        <!-- 中央怪獸 + 主角 -->
         <div class="battle">
             <div class="monster">
                 <img src="monster.png" alt="怪物">
@@ -399,7 +397,6 @@
             <button id="startBattleBtn" class="battle-btn">開始戰鬥</button>
         </div>
 
-        <!-- 右上角選單 -->
         <div class="container">
             <div class="menu-item">
                 <img class="img" src="./character.png" alt="外觀">
@@ -418,7 +415,6 @@
             </div>
         </div>
 
-        <!-- 左下角貓咪 + 點擊資訊 -->
         <div class="wrap">
             <img id="cat" src="./Popcat_default.png" alt="cat">
             
@@ -433,21 +429,17 @@
             </div>
         </div>
 
-        <!-- 貓叫聲音效 -->
         <audio id="meow" src="meow.mp3" preload="auto"></audio>
 
         <a href="./網站說明文件.pdf" download="幻卡扭域_網站說明文件.pdf" class="download-doc-btn">
             下載說明文件
         </a>
         <script>
-            // --- 讀取出戰角色 ---
             window.addEventListener('DOMContentLoaded', () => {
                 const playerContainer = document.querySelector('.player');
                 
-                // 從 LocalStorage 讀取資料
                 const savedData = localStorage.getItem('selectedHero');
 
-                // 如果有資料，就取代原本的圖片
                 if (savedData) {
                     const char = JSON.parse(savedData);
 
