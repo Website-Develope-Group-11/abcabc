@@ -82,10 +82,6 @@ app.get('/api/inventory', (req, res) => {
     res.json([...userInventory].reverse());
 });
 
-// ----------------------------------------------------------------------
-// (可選) 保留您的舊有 API 路由
-// ----------------------------------------------------------------------
-
 // 獲取所有角色資料的 API (GET /api/characters) - 保持不變
 app.get('/api/characters', (req, res) => {
   const charactersWithRandomPower = baseCharacters.map(char => ({
