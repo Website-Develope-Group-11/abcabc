@@ -440,14 +440,14 @@
             下載說明文件
         </a>
         <script>
-            // --- 新增：讀取出戰角色 ---
+            // --- 讀取出戰角色 ---
             window.addEventListener('DOMContentLoaded', () => {
                 const playerContainer = document.querySelector('.player');
                 
-                // 1. 從 LocalStorage 讀取資料
+                // 從 LocalStorage 讀取資料
                 const savedData = localStorage.getItem('selectedHero');
 
-                // 2. 如果有資料，就取代原本的圖片
+                // 如果有資料，就取代原本的圖片
                 if (savedData) {
                     const char = JSON.parse(savedData);
 
@@ -475,7 +475,7 @@
             const img2 = "./popcat_open.png";
             let toggled = false;
 
-            let clicks = 0; // 點擊次數通常不用存，或您也可以存
+            let clicks = 0;
             let coins = localStorage.getItem('player_coins') ? parseInt(localStorage.getItem('player_coins')) : 0;
             let gems = localStorage.getItem('player_gems') ? parseInt(localStorage.getItem('player_gems')) : 500; // 預設給 500 寶石讓您抽
 
@@ -495,7 +495,7 @@
                 clicks += 1;
                 coins += 10; // 點一次賺 10 金幣
 
-                // --- 修改 2: 每次點擊都存入 LocalStorage ---
+                // --- 每次點擊都存入 LocalStorage ---
                 localStorage.setItem('player_coins', coins);
 
                 // 更新顯示
@@ -522,9 +522,8 @@
                 }, 700);
             }
 
-            /* index.html 的 script 內 */
 
-            // --- 輔助函式：產生隨機整數 ---
+            // --- 產生隨機整數 ---
             function getRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
@@ -532,7 +531,7 @@
             // 當頁面載入完成時執行
             window.addEventListener('DOMContentLoaded', () => {
                 
-                // 1. 設定怪獸的戰力範圍 (例如 8000 ~ 20000，比主角稍微強一點)
+                // 1. 設定怪獸的戰力範圍 
                 const monsterMin = 8000;
                 const monsterMax = 20000;
                 const monsterPower = getRandomInt(monsterMin, monsterMax);
@@ -549,12 +548,8 @@
                 // ...
             });
 
-            /* index.html 的 script 內 */
-
             // 取得按鈕元素
             const battleBtn = document.getElementById('startBattleBtn');
-
-            /* index.html 的 script 內，替換掉原本的 battleBtn 點擊事件 */
 
             battleBtn.addEventListener('click', () => {
                 // --- 1. 前置檢查與數值取得 (這部分跟原本一樣) ---
@@ -576,7 +571,6 @@
                 const playerContainer = document.querySelector('.player');
                 const monsterContainer = document.querySelector('.monster');
 
-                // --- 2. 執行戰鬥動畫 ---
                 
                 // 步驟 A: 把主角設定為「攻擊中」狀態 (CSS 會自動執行往上衝的動畫)
                 playerContainer.classList.add('attacking');
@@ -592,23 +586,22 @@
             
             // 判斷勝負並跳出 Alert
             if (playerPower > monsterPower) {
-                alert(`🎉 戰鬥勝利！\n\n${playerName} 以 ${playerPower} 的戰力擊敗了戰力 ${monsterPower} 的怪獸！`);
+                alert(`戰鬥勝利！\n\n${playerName} 以 ${playerPower} 的戰力擊敗了戰力 ${monsterPower} 的怪獸！`);
             } else if (playerPower < monsterPower) {
-                alert(`☠️ 戰鬥失敗...\n\n怪獸的戰力高達 ${monsterPower}，而你只有 ${playerPower}。`);
+                alert(`戰鬥失敗...\n\n怪獸的戰力高達 ${monsterPower}，而你只有 ${playerPower}。`);
             } else {
-                alert(`⚖️ 平手！\n雙方戰力都是 ${playerPower}，不分勝負。`);
+                alert(`平手！\n雙方戰力都是 ${playerPower}，不分勝負。`);
             }
 
             // Alert 關閉後，復原所有狀態
             playerContainer.classList.remove('attacking'); // 主角歸位
             monsterContainer.classList.remove('hit');      // 怪獸停止搖晃
 
-            }, 500); // 這裡的 500ms 對應 CSS 動畫的時間
+            }, 500); // CSS 動畫的時間
 
         }, 300); // 這裡的 300ms 對應主角衝上去的時間
             });
 
-            /* index.html 的 script 內 */
 
             // 1. 取得兌換按鈕元素
             const convertBtn = document.getElementById('convertBtn');
